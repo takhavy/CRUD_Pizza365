@@ -1,12 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Danh sách đơn hàng</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
-<body>
-    Hello devcamp-pizza365
+
+<body >
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-center">Danh sách đơn hàng</h2>
+                <table class="table text-center table-striped" id="table-order">
+                    <thead>
+                        <tr>
+                            <th scope="col">Order ID</th>
+                            <th scope="col">Kích cỡ combo</th>
+                            <th scope="col">Loại pizza</th>
+                            <th scope="col">Nước uống</th>
+                            <th scope="col">Thành tiền</th>
+                            <th scope="col">Họ và tên</th>
+                            <th scope="col">Số điện thoại</th>
+                            <th scope="col">Trạng thái</th>
+                            <th scope="col">Chi tiết</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 </body>
+<script>
+    "use strict";
+    /*** REGION 1 - Global variables - Vùng khai báo biến, hằng số, tham số TOÀN CỤC */
+    const gEND_ROW_TABLE = -1;
+    const COL_ORDER_ID = 1;
+    const gREQUEST_STATUS_OK = 200; // GET & PUT success
+    const gREQUEST_READY_STATUS_FINISH_AND_OK = 4;
+    const gREQUEST_CREATE_SUCCESS = 201;
+    const vBASE_URL = "http://42.115.221.44:8080/devcamp-pizza365/orders";
+    const vUTF8_TEXT_APPLICATION_HEADER = "application/json;charset=UTF-8";
+
+    /*** REGION 2 - Vùng gán / thực thi sự kiện cho các elements */
+    // Hàm thực hiện khi load trang
+    $(document).on("click",".btn-detail",function(){
+                        // thu thập dữ liệu
+                        debugger;
+        var vID=$(this).attr("data-id");
+        var vOrderID=$(this).attr("data-order-id");
+        console.log("Order ID: "+vOrderID);
+        console.log("ID: "+vID);
+        const vDETAIL_FORM_URL= "OrderDetails.html";
+        var vUrlSiteOpen=vDETAIL_FORM_URL+"?orderid="+vOrderID+"&id="+vID;
+        console.log(vUrlSiteOpen);
+        window.location.href=vUrlSiteOpen;  
+    });
+    $(document).ready(function(){
+        "use strict";
+        $.ajax({
+            url:vBASE_URL,
+            type:"GET",
+            headers:{
+                "Content-Type":"application/json;charset=UTF-8",
+            },
+            dataType:"json",
+            success:function(data){
+                console.log(data);
+                var vTable =$("#table-order");
+                var vTableBody = $("#table-order tbody");
+                vTableBody.empty(); // Bỏ các dòng dữ liệu trong bảng
+                for(var bI = 0; bI < data.length; bI++){
+                    var bRow = "";
+                    bRow += "<tr>";
+                        bRow += "<td>" + data[bI].orderId + "</td>";
+                        bRow += "<td>" + data[bI].kichCo + "</td>";
+                        bRow += "<td>" + data[bI].loaiPizza + "</td>";
+                        bRow += "<td>" + data[bI].idLoaiNuocUong + "</td>";
+                        bRow += "<td>" + data[bI].thanhTien + "</td>";
+                        bRow += "<td>" + data[bI].hoTen + "</td>";
+                        bRow += "<td>" + data[bI].soDienThoai + "</td>";
+                        bRow += "<td>" + data[bI].trangThai + "</td>";
+                        bRow += "<td><button class='btn btn-primary btn-detail' data-id="+data[bI].id+" data-order-id="+data[bI].orderId+"> Chi tiết </button></td>";
+                    bRow += "</tr>";
+                    vTableBody.append(bRow);
+                }  
+            },
+            error:function(ajaxContext){
+                alert(ajaxContext.responseText);
+            }
+        });
+    });
+
+    /*** REGION 3 - Event handlers - Vùng khai báo các hàm xử lý sự kiện */
+        
+    /*** REGION 4 - Common funtions - Vùng khai báo hàm dùng chung trong toàn bộ chương trình*/
+    
+</script>
+
 </html>

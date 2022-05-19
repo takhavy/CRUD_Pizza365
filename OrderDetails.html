@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <body >
+        <div class="container bg-light text-center">
+            <h1>Order Detail!!!</h1>
+            <div class="row form-group">
+                <label>Order ID(mã đơn hàng)</label>
+                <textarea id="text-idOder"  style="width: 100%;height: 30px;"></textarea>
+            </div>
+            <div class="row form-group">
+                <label for="select-size">Cỡ Combo</label>
+                <select id="select-size"  style="width: 100%;height: 30px;">
+                    <option value="S">Nhỏ</option>
+                    <option value="M">Vừa</option>
+                    <option value="L">Lớn</option>
+                </select>    
+            </div>
+            <div class="row form-group">
+                <label>Đường kính pizza</label>
+                <textarea id="text-duongkinh"  style="width: 100%;height: 30px;"></textarea>
+            </div>
+            <div class="row form-group">
+                <label>Sườn nướng miếng</label>
+                <textarea id="text-suon"  style="width: 100%;height: 30px;"></textarea>
+            </div>
+            <div class="row form-group">
+                <label for="select-drink">Đồ uống</label>
+                <select id="select-drink"  style="width: 100%;height: 30px;">
+                    <option value="TRATAC">Trà tắc</option>
+                    <option value="COCA">Cocacola</option>
+                    <option value="PEPSI">Pepsi</option>
+                    <option value="LAVIE">Lavie</option>
+                    <option value="TRASUA">Trà sữa trân châu</option>
+                    <option value="FANTA">Fanta</option>
+                </select>     
+            </div>
+            <div class="row form-group">
+                <label>Số lượng nước uống</label>
+                <textarea id="text-soluong"  style="width: 100%;height: 30px;"></textarea>
+            </div>
+            <div class="row form-group">
+                <label>Voucher ID(mã voucher)</label>
+                <textarea id="text-VoucherID"  style="width: 100%;height: 30px;"></textarea>
+            </div>
+            <div class="row form-group">
+                <label>Loại pizza(pizzatype)</label>
+                <textarea id="text-pizzaType"  style="width: 100%;height: 30px;"></textarea>
+            </div>
+            <div class="row form-group">
+                <label>Salad(g)</label>
+                <textarea id="text-salad"  style="width: 100%;height: 30px;"></textarea>
+            </div>
+            <div class="row form-group">
+                <label>Thành tiền</label>
+                <textarea id="text-price"  style="width: 100%;height: 30px;"></textarea>
+            </div>
+            <div class="row form-group">
+                <label>Giảm giá</label>
+                <textarea id="text-discount"  style="width: 100%;height: 30px;"></textarea>
+            </div>
+            <div class="row form-group">
+                <label>Họ và tên</label>
+                <textarea id="text-name"  style="width: 100%;height: 30px;"></textarea>
+            </div>
+            <div class="row form-group">
+                <label>Email</label>
+                <textarea id="text-email"  style="width: 100%;height: 30px;"></textarea>
+            </div>
+            <div class="row form-group">
+                <label>Số điện thoại</label>
+                <textarea id="text-phone"  style="width: 100%;height: 30px;"></textarea>
+            </div>
+            <div class="row form-group">
+                <label>Địa chỉ</label>
+                <textarea id="text-address"  style="width: 100%;height: 30px;"></textarea>
+            </div>
+            <div class="row form-group">
+                <label>Lời nhắn</label>
+                <textarea id="text-loiNhan"  style="width: 100%;height: 30px;"></textarea>
+            </div>
+            <div class="row form-group">
+                <label>Trạng thái đơn hàng</label>
+                <textarea id="text-Status"  style="width: 100%;height: 30px;"></textarea>
+            </div>
+            <div class="row form-group">
+                <label>Ngày tạo đơn</label>
+                <textarea id="text-dateCreate"  style="width: 100%;height: 30px;"></textarea>
+            </div>
+            <div class="row form-group">
+                <label>Ngày cập nhật</label>
+                <textarea id="text-dateUpdate"  style="width: 100%;height: 30px;"></textarea>
+            </div>
+            <div class=" form-group">
+                <div  class="row">
+                    <button id="button-confirm" class="btn btn-success w-50" >Confirm</button>
+                    <button id="button-cancel" class="btn btn-info w-50" >Cancel</button>
+                </div>
+            </div> 
+        </div>
+ 
+    </body>
+    <script>
+        "use strict";
+        var vOrderId;
+        var vID;
+        const gREQUEST_STATUS_OK = 200; // GET & PUT success
+        const gREQUEST_READY_STATUS_FINISH_AND_OK = 4;
+        const gREQUEST_CREATE_SUCCESS = 201;
+        const vBASE_URL = "http://42.115.221.44:8080/devcamp-pizza365/orders";
+        const vUTF8_TEXT_APPLICATION_HEADER = "application/json;charset=UTF-8";
+
+        $(document).ready(function(){
+            // get data from query string
+            var vUrlString = window.location.href; //đường đẫn gọi đến trang
+            console.log(vUrlString);
+            var vUrl = new URL(vUrlString);
+            // get parameters
+            var params = new URLSearchParams(vUrl.search);
+            var vODerID = params.get("orderid"); 
+            var vId = params.get("id"); 
+            console.log(vODerID);
+            console.log(vId);
+            vOrderId=vODerID;
+            vID=vId;
+            onGetOrderByOrderIdClick();
+            //$("#button-cancel").on("click",onBtnCancelClick);
+        });
+        $(document).on("click","#button-cancel",function(){
+            "use strict";
+            var vIdOfOrder = vID; 
+            var vObjectRequest = {
+                trangThai: "cancel",
+            }
+            $.ajax({
+                url:vBASE_URL+"/" + vIdOfOrder,
+                type:"PUT",
+                headers:{
+                    "Content-Type":"application/json;charset=UTF-8",
+                },
+                dataType:"json",
+                data:JSON.stringify(vObjectRequest),
+                success:function(res){
+                    console.log(res);
+                    const vDETAIL_FORM_URL="index.html";
+                    window.location.href=vDETAIL_FORM_URL;
+                },
+                error:function(ajaxContext){
+                    alert(ajaxContext.responseText);
+                }
+            });
+        });
+        $(document).on("click","#button-confirm",function(){
+            "use strict";
+            var vIdOfOrder = vID; 
+            var vIdOder=$("#text-idOder");
+            var vSize=$("#select-size");
+            var vDuongKinh=$("#text-duongkinh");
+            var vSuon=$("#text-suon");
+            var vDrink=$("#select-drink");
+            var vSoluong=$("#text-soluong");
+            var vVoucherID=$("#text-VoucherID");
+            var vTypePizza=$("#text-pizzaType");
+            var vSalad=$("#text-salad");
+            var vPrice=$("#text-price");
+            var vDiscount=$("#text-discount");
+            var vName=$("#text-name");
+            var vEmail=$("#text-email");
+            var vPhone=$("#text-phone");
+            var vAddress=$("#text-address");
+            var vGhiChu=$("#text-loiNhan");
+            var vStatus=$("#text-Status");
+            var vDateCreate=$("#text-dateCreate");
+            var vObjectRequest = {
+                orderId: vIdOder.val(),
+                kichCo: vSize.val(),
+                duongKinh: vDuongKinh.val(),
+                suon: vSuon.val(),
+                salad: vSalad.val(),
+                loaiPizza: vTypePizza.val(),
+                idVourcher: vVoucherID.val(),
+                thanhTien: vPrice.val(),
+                giamGia: vDiscount.val(),
+                idLoaiNuocUong: vDrink.val(),
+                soLuongNuoc: vSoluong.val(),
+                hoTen: vName.val(),
+                email: vEmail.val(),
+                soDienThoai: vPhone.val(),
+                diaChi: vAddress.val(),
+                loiNhan: vGhiChu.val(),
+                trangThai: "confirmed",
+            }
+            $.ajax({
+                url:vBASE_URL+"/" + vIdOfOrder,
+                type:"PUT",
+                headers:{
+                    "Content-Type":"application/json;charset=UTF-8",
+                },
+                dataType:"json",
+                data:JSON.stringify(vObjectRequest),
+                success:function(res){
+                    console.log(res);
+                    const vDETAIL_FORM_URL="index.html";
+                    window.location.href=vDETAIL_FORM_URL;
+                },
+                error:function(ajaxContext){
+                    alert(ajaxContext.responseText);
+                }
+            });
+        });
+
+
+
+        
+        function onGetOrderByOrderIdClick() {
+            "use strict";
+            var vIdOder=$("#text-idOder");
+            var vSize=$("#select-size");
+            var vDuongKinh=$("#text-duongkinh");
+            var vSuon=$("#text-suon");
+            var vDrink=$("#select-drink");
+            var vSoluong=$("#text-soluong");
+            var vVoucherID=$("#text-VoucherID");
+            var vTypePizza=$("#text-pizzaType");
+            var vSalad=$("#text-salad");
+            var vPrice=$("#text-price");
+            var vDiscount=$("#text-discount");
+            var vName=$("#text-name");
+            var vEmail=$("#text-email");
+            var vPhone=$("#text-phone");
+            var vAddress=$("#text-address");
+            var vGhiChu=$("#text-loiNhan");
+            var vStatus=$("#text-Status");
+            var vDateCreate=$("#text-dateCreate");
+            var vDateUpdate=$("#text-dateUpdate");
+            //base url
+            vOrderId;
+
+            $.ajax({
+                url:vBASE_URL+"/" + vOrderId,
+                type:"GET",
+                headers:{
+                    "Content-Type":"application/json;charset=UTF-8",
+                },
+                dataType:"json",
+                success:function(data){
+                    console.log(data);
+                    vIdOder.html(data.orderId);
+                    for(var bI=0;bI<vSize.length;bI++){
+                        if(data.kichCo==vSize[bI].value){
+                            $("select[name='select-size'] option:selected").text();
+                        }
+                    }
+                    vDuongKinh.html(data.duongKinh);
+                    vSuon.html(data.suon);
+                    //vDrink.innerText=vJsonODerData.idLoaiNuocUong;
+                    for(var bI=0;bI<vDrink.length;bI++){
+                        if(data.idLoaiNuocUong==vDrink[bI].value){
+                            $("select[name='select-drink'] option:selected").text();
+                        }
+                    }
+                    vSoluong.html(data.soLuongNuoc);
+                    vVoucherID.html(data.idVourcher);
+                    vTypePizza.html(data.loaiPizza);
+                    vSalad.html(data.salad);
+                    vPrice.html(data.thanhTien);
+                    vDiscount.html(data.giamGia);
+                    vName.html(data.hoTen);
+                    vEmail.html(data.email);
+                    vPhone.html(data.soDienThoai);
+                    vAddress.html(data.diaChi);
+                    vGhiChu.html(data.loiNhan);
+                    vStatus.html(data.trangThai);
+                    vDateCreate.html(data.ngayTao);
+                    vDateUpdate.html(data.ngayCapNhat);
+
+                },
+                error:function(ajaxContext){
+                    alert(ajaxContext.responseText);
+                }
+            });
+        }
+    </script>
+</html>
