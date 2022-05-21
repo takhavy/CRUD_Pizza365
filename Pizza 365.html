@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <title> Pizza 365 project</title>
@@ -352,11 +352,15 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script type="text/javascript">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js" integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script >
     "use strict";
     /*** REGION 1 - Global variables - Vùng khai báo biến, hằng số, tham số TOÀN CỤC */
+    const gREQUEST_STATUS_OK = 200;
+    const gREQUEST_CREATE_OK = 201; // status 201 tao thanh cong
+    const gREQUEST_READY_STATUS_FINISH_AND_OK = 4;
     const vREG = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const vnf_regex = /((09|03|07|08|05)+([0-9]{8})\b)/g;
     var gselectedMenuStructure = {
       kichCo: "",
       duongKinh: "",
@@ -376,14 +380,31 @@
     var gselectedPizzaType = {
       loaiPizza: "",
     };
+    var dataVoucher=[];
+    var dataSizePizza=[];
     var giamgia;
     var price;
+    var discount;
+    var giatien;
+    var voucherID;
     /*** REGION 2 - Vùng gán / thực thi hàm xử lý sự kiện cho các elements */
 
 
     /*** REGION 3 - Event handlers - Vùng khai báo các hàm xử lý sự kiện */
     $(document).ready(function () {
       "use strict";
+      $.ajax({
+        url: "http://42.115.221.44:8080/devcamp-pizza365/orders",
+        type : "GET",
+        dataType: "json",
+        contentType: "application/json; charset=UTF-8",
+        success: function (res) {
+          console.log(res);
+        },
+        error: function (ajaxContext) {
+          alert(ajaxContext.responseText);
+        },
+      });
       onGetSizeByClick();
       onGetTypeByClick();
       onGetDrinkList();
@@ -394,29 +415,61 @@
       ValidateData();
       $("#form-modal").modal("show");
       getDatafromForm();
+      var name = $("#inp-fullname").val();
+      var email = $("#inp-email").val();
+      var phone = $("#inp-dien-thoai").val();
+      var address = $("#inp-dia-chi").val();
+      var voucher = $("#inp-voucher").val();
+      getVoucher(voucher);
+      var message = $("#inp-message").val();
+      //debugger;
+      gselectedMenuStructure.idLoaiNuocUong = $('#select-drink :selected').val();
+      gselectedMenuStructure.hoTen = name;
+      gselectedMenuStructure.email = email;
+      gselectedMenuStructure.soDienThoai = phone;
+      gselectedMenuStructure.diaChi = address;
+      gselectedMenuStructure.loiNhan = message;
+      console.log(dataSizePizza);
     })
-    $("#btn-create-bill").on("click", function () {
-      "use strict";
-      $("#form-modal").modal("hide");
-      $("#modal-confirm").modal("show");
+    $("#btn-create-bill").on("click",function(){
       postData();
     });
     function postData() {
+      "use strict";
       debugger;
+      var totalPrice=giatien-giatien*discount/100;
+      var vObjectRequest={
+        kichCo: dataSizePizza[1],
+        duongKinh: dataSizePizza[0][0],
+        suon: dataSizePizza[0][1],
+        salad: dataSizePizza[0][2],
+        loaiPizza: gselectedPizzaType.loaiPizza,
+        idVourcher: voucherID,
+        idLoaiNuocUong: $('#select-drink :selected').val(),
+        soLuongNuoc: dataSizePizza[0][3],
+        hoTen: $("#inp-fullname").val(),
+        thanhTien: totalPrice,
+        email: $("#inp-email").val(),
+        soDienThoai: $("#inp-dien-thoai").val(),
+        diaChi: $("#inp-dia-chi").val(),
+        loiNhan: $("#inp-message").val()
+      }
       $.ajax({
         url: "http://42.115.221.44:8080/devcamp-pizza365/orders",
-        type: "POST",
-        data: JSON.stringify(gselectedMenuStructure),
+        type : "POST",
         dataType: "json",
+        data: JSON.stringify(vObjectRequest),
         contentType: "application/json; charset=UTF-8",
         success: function (data) {
           console.log(data);
+          $("#form-modal").modal("hide");
+          $("#modal-confirm").modal("show");
           $("#text-ma-don-hang").val(data.orderId);
 
         },
         error: function (ajaxContext) {
           alert(ajaxContext.responseText);
-        }
+        },
       });
     }
     /*** REGION 4 - Common funtions - Vùng khai báo hàm dùng chung trong toàn bộ chương trình*/
@@ -468,8 +521,8 @@
         console.log("ValidateData Email: TRUE");
       }
       var phone = $("#inp-dien-thoai").val();
-      if ($.trim(phone) == "") {
-        alert("Bạn hãy điền đầy đủ thông tin vào form!");
+      if ($.trim(phone) == "" || vnf_regex.test(phone)==false) {
+        alert("Hãy kiểm tra lại số điện thoại của bạn! Không hợp lệ");
         console.log("ValidateData Phone: FALSE");
       }
       else {
@@ -508,17 +561,22 @@
         alert("Bạn chưa chọn loại pizza!");
       }
     }
+    
     function getVoucher(paramElement) {
       $.ajax({
         url: "http://42.115.221.44:8080/devcamp-voucher-api/voucher_detail/" + paramElement,
         type: "GET",
-        async: false,
         dataType: "json",
+        async:true,
         success: function (data) {
+          dataVoucher.splice(0,dataVoucher.length);
+          dataVoucher.push(data);
+          discount=parseInt(dataVoucher[0].phanTramGiamGia);
+          voucherID=dataVoucher[0].maVoucher;
           console.log(data);
+          console.log(dataVoucher);
           console.log("ValidateData Address: TRUE");
           gselectedMenuStructure.idVourcher = data.maVoucher;
-          debugger;
           var tien = parseInt(gselectedMenuStructure.thanhTien);
           giamgia = parseInt(data.phanTramGiamGia) / 100;
           console.log(tien);
@@ -563,9 +621,13 @@
         var listItemBody = $(".ul_card_s").children().map(function () {
           return $(this).find("b").text().trim();
         }).get();
+        dataSizePizza.splice(0,dataSizePizza.length);
+        dataSizePizza.push(listItemBody);
         console.log("%c" + $(".s").children().find("h3").text(), "color:purple");
         console.log("%cBody item: ", "color:green", listItemBody);
         var size = $(".s").children().find("h3").text().slice(0, 1);
+        dataSizePizza.push(size);
+        giatien=parseInt(dataSizePizza[0][4]);
         gselectedMenuStructure.kichCo = size;
         gselectedMenuStructure.duongKinh = listItemBody[0];
         gselectedMenuStructure.suon = listItemBody[1];
@@ -584,9 +646,13 @@
           return $(this).find("b").text().trim();
         }).get();
         //console.log(list.childNodes);
+        dataSizePizza.splice(0,dataSizePizza.length);
+        dataSizePizza.push(listItemBody);
         console.log("%c" + $(".m").children().find("h3").text(), "color:purple");
         console.log("%cBody item: ", "color:green", listItemBody);
         var size = $(".m").children().find("h3").text().slice(0, 1);
+        dataSizePizza.push(size);
+        giatien=parseInt(dataSizePizza[0][4]);
         gselectedMenuStructure.kichCo = size;
         gselectedMenuStructure.duongKinh = listItemBody[0];
         gselectedMenuStructure.suon = listItemBody[1];
@@ -605,9 +671,13 @@
           return $(this).find("b").text().trim();
         }).get();
         //console.log(list.childNodes);
+        dataSizePizza.splice(0,dataSizePizza.length);
+        dataSizePizza.push(listItemBody);
         console.log("%c" + $(".l").children().find("h3").text(), "color:purple");
         console.log("%cBody item: ", "color:green", listItemBody);
         var size = $(".s").children().find("h3").text().slice(0, 1);
+        dataSizePizza.push(size);
+        giatien=parseInt(dataSizePizza[0][4]);
         gselectedMenuStructure.kichCo = size;
         gselectedMenuStructure.duongKinh = listItemBody[0];
         gselectedMenuStructure.suon = listItemBody[1];
